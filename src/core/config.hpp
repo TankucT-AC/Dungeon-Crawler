@@ -10,17 +10,20 @@
 #include <string>
 
 namespace config {
+// ─── Сеть ───
 static const std::string IPv4 = "127.0.0.1";
 static const int PORT = 8080;
 static const std::string SCHEME_HOST_PORT =
     "https://" + IPv4 + ":" + std::to_string(PORT);
 
+// ─── Математические константы ───
 static const float PI = 3.14159265f;
+static const int TILE_SIZE = 64;
 
+// ─── Базовые настройки игрового окна ───
 static const int GAMEBOARD_HEIGHT = 800;
 static const int GAMEBOARD_WIDTH = 1200;
-static const int TILE_SIZE = 64;
-static const std::string GAMEBOARD_NAME = "gameboard";
+static const std::string GAMEBOARD_NAME = "2DGame";
 
 static const std::string ASSETS_PATH = "assets/";
 static const std::string TEXTURE_PATH = ASSETS_PATH + "textures/";
@@ -64,10 +67,11 @@ static const std::string PORTAL_SPRITESHEET =
 static const int PORTAL_FRAME_W = 212;
 static const int PORTAL_FRAME_H = 208;
 static const int PORTAL_FRAME_COUNT = 8;
-static const float PORTAL_FRAME_TIME = 0.15f;
-static const float PORTAL_SCALE = 1.5f;
+static const float PORTAL_FRAME_TIME = 0.08f;
+static const float PORTAL_SCALE = 3.f;
 static const float PORTAL_INACTIVE_SCALE = 0.25f;
-
+static const int PORTAL_IDLE_ROW = 2;
+static const int PORTAL_RUN_ROW = 2;
 // ─── Пули ───
 static const float BULLET_SCALE = 2.f;
 static const float BULLET_HITBOX_W = 12.f;
@@ -113,21 +117,29 @@ static const float DEBUG_PORTAL_OUTLINE = 2.f;
 
 // ─── Стены/пол ───
 static const std::string DEFAULT_WALL_TEXTURE =
-    TEXTURE_PATH + "default_wall.png";
-static const std::string DESERT_FLOOR_TEXTURE =
-    TEXTURE_PATH + "default_floor.png";
+    TEXTURE_PATH + "world/default/default_wall.png";
+static const std::string DEFAULT_FLOOR_TEXTURE =
+    TEXTURE_PATH + "world/default/default_floor.png";
 
+static const std::string DESERT_WALL_TEXTURE =
+    TEXTURE_PATH + "world/desert/desert_wall.png";
+static const std::string DESERT_FLOOR_TEXTURE =
+    TEXTURE_PATH + "world/desert/desert_floor.png";
 // ─── Сундуки ───
 static const std::string DEFAUTL_CHEST_CLOSED_TEXTURE =
-    TEXTURE_PATH + "default_chest_closed.png";
+    TEXTURE_PATH + "world/default/default_chest_closed.png";
 static const std::string DEFAUTL_CHEST_OPEN_TEXTURE =
-    TEXTURE_PATH + "default_chest_open.png";
+    TEXTURE_PATH + "world/default/default_chest_open.png";
 
+static const std::string DESERT_CHEST_CLOSED_TEXTURE =
+    TEXTURE_PATH + "world/desert/desert_chest_closed.png";
+static const std::string DESERT_CHEST_OPEN_TEXTURE =
+    TEXTURE_PATH + "world/desert/desert_chest_open.png";
 // ─── Ворота ───
 static const std::string DEFAULT_GATE_CLOSED =
-    TEXTURE_PATH + "default_gate_closed.jpg";
+    TEXTURE_PATH + "world/default_gate_closed.jpg";
 static const std::string DEFAUTL_GATE_OPEN =
-    TEXTURE_PATH + "default_gate_open.jpg";
+    TEXTURE_PATH + "world/default_gate_open.jpg";
 
 // Deprecated
 static const std::string BULLET_PLAYER_TEXTURE =

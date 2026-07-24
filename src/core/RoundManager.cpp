@@ -3,7 +3,24 @@
 
 #include "RoundManager.hpp"
 #include "src/core/config.hpp"
+#include "src/world/BiomeTheme.hpp"
 #include "src/world/Prefabs.hpp"
+
+namespace {
+inline BiomeTheme DEFAULT = {config::DEFAULT_WALL_TEXTURE,
+                             config::DEFAULT_FLOOR_TEXTURE,
+                             config::DEFAUTL_GATE_OPEN,
+                             config::DEFAULT_GATE_CLOSED,
+                             config::DEFAUTL_CHEST_CLOSED_TEXTURE,
+                             config::DEFAUTL_CHEST_OPEN_TEXTURE};
+
+inline BiomeTheme DESERT = {
+    config::DESERT_WALL_TEXTURE,         config::DESERT_FLOOR_TEXTURE,
+    config::DEFAUTL_GATE_OPEN,           config::DEFAULT_GATE_CLOSED,
+    config::DESERT_CHEST_CLOSED_TEXTURE, config::DESERT_CHEST_OPEN_TEXTURE};
+
+enum class BIOM_TYPE { DEFAULT = 1, DESERT };
+}; // namespace
 
 RoundManager::RoundManager(DungeonGenerator &dungeonGen,
                            LevelManager &levelManager, ResourceManager &rm,
@@ -12,20 +29,28 @@ RoundManager::RoundManager(DungeonGenerator &dungeonGen,
     : m_dungeonGen(dungeonGen), m_levelManager(levelManager), m_rm(rm),
       m_player(player), m_combat(combat), m_pickups(pickups) {}
 
-void RoundManager::generateRound(
-    std::vector<std::unique_ptr<Enemy>> &enemies,
-    std::vector<std::unique_ptr<Bullet>> &bullets) {
-  enemies.clear();
-  bullets.clear();
+void RoundManager::generateRound() {
   m_pickups.clear();
   m_combat.reset();
-  m_combat.setMaxWaves(m_round);
+  m_combat.setMaxWaves(
+      m_round); // какой раунд, такое и количество волн в конмнате.
   m_portalRoom.reset();
   m_portal.reset();
 
   m_dungeonGen.reseed();
   DungeonData dungeon = m_dungeonGen.generate();
-  m_levelManager.buildFromData(dungeon, m_rm);
+
+  switch (m_round) {
+  case static_cast<int>(BIOM_TYPE::DEFAULT):
+    m_levelManager.buildFromData(dungeon, m_rm, DEFAULT);
+    break;
+  case static_cast<int>(BIOM_TYPE::DESERT):
+    m_levelManager.buildFromData(dungeon, m_rm, DESERT);
+    break;
+  default:
+    m_levelManager.buildFromData(dungeon, m_rm, DEFAULT);
+    break;
+  }
   m_player.setPosition(dungeon.playerSpawnPoint);
   m_player.initAnimation(config::PLAYER_FRAME_W, config::PLAYER_FRAME_H,
                          config::PLAYER_FRAME_COUNT, config::PLAYER_FRAME_TIME,
@@ -40,9 +65,7 @@ void RoundManager::generateRound(
   }
 }
 
-void RoundManager::tryAdvanceRound(
-    sf::Vector2<float> worldPos, std::vector<std::unique_ptr<Enemy>> &enemies,
-    std::vector<std::unique_ptr<Bullet>> &bullets) {
+void RoundManager::tryAdvanceRound(sf::Vector2<float> worldPos) {
   if (!m_portal || !m_portal->isActive())
     return;
   if (!m_portal->getHitbox().contains(worldPos))
@@ -51,23 +74,19 @@ void RoundManager::tryAdvanceRound(
   m_round++;
   // m_combat.setMaxWaves(m_round);
   if (m_round > MAX_ROUNDS)
-    goToPurgatory(enemies, bullets);
+    goToPurgatory();
   else
-    generateRound(enemies, bullets);
+    generateRound();
 }
 
-void RoundManager::goToPurgatory(
-    std::vector<std::unique_ptr<Enemy>> &enemies,
-    std::vector<std::unique_ptr<Bullet>> &bullets) {
+void RoundManager::goToPurgatory() {
   RoomPlacement rp;
   rp.prefabIndex = Prefabs::IDX_PURIFICATION;
   DungeonData purgData;
   purgData.rooms.push_back(rp);
   purgData.corridorWidth = 1;
-  m_levelManager.buildFromData(purgData, m_rm);
+  m_levelManager.buildFromData(purgData, m_rm, DEFAULT);
   m_pickups.clear();
-  enemies.clear();
-  bullets.clear();
   float center = config::TILE_SIZE * Prefabs::PREFAB_SIZE / 2.f;
   m_player.setPosition({center, center});
   m_portal.reset();

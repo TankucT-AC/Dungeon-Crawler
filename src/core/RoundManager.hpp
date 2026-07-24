@@ -8,8 +8,6 @@
 #include "LevelManager.hpp"
 #include "PickupManager.hpp"
 #include "ResourceManager.hpp"
-#include "src/game/Bullet.hpp"
-#include "src/game/Enemy.hpp"
 #include "src/game/Player.hpp"
 #include "src/world/DungeonGenerator.hpp"
 #include "src/world/Portal.hpp"
@@ -17,7 +15,6 @@
 #include <functional>
 #include <memory>
 #include <optional>
-#include <vector>
 
 /**
  * @brief Менеджер прогрессии раундов.
@@ -45,8 +42,7 @@ private:
    * @param enemies Враги текущего раунда (очищаются).
    * @param bullets Пули текущего раунда (очищаются).
    */
-  void goToPurgatory(std::vector<std::unique_ptr<Enemy>> &enemies,
-                     std::vector<std::unique_ptr<Bullet>> &bullets);
+  void goToPurgatory();
 
 public:
   /**
@@ -59,24 +55,15 @@ public:
   /**
    * @brief Генерирует новый уровень и сбрасывает состояние раунда.
    *
-   * Ресидит генератор, перестраивает комнаты, переставляет игрока на спавн,
-   * очищает врагов/пули/пикапы, находит комнату с порталом.
-   * @param enemies Список врагов (очищается).
-   * @param bullets Список пуль (очищается).
+   * Ресидит генератор, перестраивает комнаты, переставляет игрока на спавн
    */
-  void generateRound(std::vector<std::unique_ptr<Enemy>> &enemies,
-                     std::vector<std::unique_ptr<Bullet>> &bullets);
+  void generateRound();
 
   /**
    * @brief Переход на следующий раунд по клику на портал.
    * @param worldPos Позиция курсора в мировых координатах.
-   * @param enemies Список врагов (для перегенерации).
-   * @param bullets Список пуль (для перегенерации).
    */
-  void tryAdvanceRound(sf::Vector2<float> worldPos,
-                       std::vector<std::unique_ptr<Enemy>> &enemies,
-                       std::vector<std::unique_ptr<Bullet>> &bullets);
-
+  void tryAdvanceRound(sf::Vector2<float> worldPos);
   /** @brief Спавнит портал в портальной комнате (если она найдена). */
   void spawnPortal();
 

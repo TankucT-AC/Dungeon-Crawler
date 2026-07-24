@@ -81,6 +81,7 @@ target_sources(game_core PRIVATE
     src/world/Room.cpp
     src/world/Wall.hpp
     src/world/Wall.cpp
+    src/world/BiomeTheme.hpp
 )
 
 # third-party

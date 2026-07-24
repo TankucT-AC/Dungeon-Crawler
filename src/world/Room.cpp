@@ -3,6 +3,7 @@
 
 #include "Room.hpp"
 #include "src/core/config.hpp"
+#include "src/world/BiomeTheme.hpp"
 #include "src/world/Prefabs.hpp"
 #include <memory>
 #include <string>
@@ -26,45 +27,20 @@ sf::Vector2<float> tileToWorld(int tx, int ty) {
 }
 } // namespace
 
-// ─── Старый конструктор ───
-Room::Room(const std::vector<std::vector<int>> &InitBlueprint,
-           sf::Vector2<float> InitPos, ResourceManager &rm)
-    : m_tilePos{0, 0}, m_roomType(RoomType::Spawn),
-      m_combatState(CombatState::Inactive) {
-  for (int y = 0; y < static_cast<int>(InitBlueprint.size()); ++y) {
-    for (int x = 0; x < static_cast<int>(InitBlueprint[y].size()); ++x) {
-      int tile = InitBlueprint[y][x];
-      if (tile == static_cast<int>(RoomElements::TEMP_FLAG))
-        continue;
-      if (tile == static_cast<int>(RoomElements::WALL)) {
-        sf::Vector2<float> wp = {InitPos.x + (x * config::TILE_SIZE),
-                                 InitPos.y + (y * config::TILE_SIZE)};
-        m_walls.push_back(std::make_unique<Wall>(
-            rm.getTexture(config::DEFAULT_WALL_TEXTURE), wp, false));
-      } else if (tile == static_cast<int>(RoomElements::FLOOR)) {
-        sf::Vector2<float> fp = {InitPos.x + (x * config::TILE_SIZE),
-                                 InitPos.y + (y * config::TILE_SIZE)};
-        m_floors.push_back(std::make_unique<Floor>(
-            rm.getTexture(config::DESERT_FLOOR_TEXTURE), fp));
-      }
-    }
-  }
-}
-
-// ─── Основной конструктор ───
 Room::Room(uint8_t prefabIndex, sf::Vector2<int> tilePos, bool cUp, bool cDown,
-           bool cLeft, bool cRight, int doorHalfW, ResourceManager &rm)
+           bool cLeft, bool cRight, int doorHalfW, ResourceManager &rm,
+           BiomeTheme &biome)
     : m_tilePos(tilePos), m_roomType(typeFromPrefab(prefabIndex)),
-      m_combatState(CombatState::Inactive) {
+      m_combatState(CombatState::Inactive), m_biome(biome) {
   buildFromPrefab(prefabIndex, cUp, cDown, cLeft, cRight, doorHalfW, rm);
 }
 
 void Room::buildFromPrefab(uint8_t prefabIndex, bool cUp, bool cDown,
-                            bool cLeft, bool cRight, int doorHalfW,
-                            ResourceManager &rm) {
+                           bool cLeft, bool cRight, int doorHalfW,
+                           ResourceManager &rm) {
   const std::string prefab = flattenPrefab(prefabIndex);
-  const sf::Texture &wallTex = rm.getTexture(config::DEFAULT_WALL_TEXTURE);
-  const sf::Texture &floorTex = rm.getTexture(config::DESERT_FLOOR_TEXTURE);
+  const sf::Texture &wallTex = rm.getTexture(m_biome.wallTexture);
+  const sf::Texture &floorTex = rm.getTexture(m_biome.floorTexture);
 
   std::vector<std::vector<bool>> isFloor(ROOM_SZ,
                                          std::vector<bool>(ROOM_SZ, false));
@@ -126,10 +102,9 @@ void Room::buildFromPrefab(uint8_t prefabIndex, bool cUp, bool cDown,
   }
 
   // Сундук: ищем пустой пол в центре
-  bool needsSlot = (m_roomType == RoomType::Combat ||
-                     m_roomType == RoomType::Treasure ||
-                     m_roomType == RoomType::Spawn ||
-                     m_roomType == RoomType::Portal);
+  bool needsSlot =
+      (m_roomType == RoomType::Combat || m_roomType == RoomType::Treasure ||
+       m_roomType == RoomType::Spawn || m_roomType == RoomType::Portal);
   if (needsSlot) {
     if (isFloor[DOOR_IDX][DOOR_IDX]) {
       m_chestPos = tileToWorld(m_tilePos.x + DOOR_IDX, m_tilePos.y + DOOR_IDX);
@@ -146,13 +121,12 @@ void Room::buildFromPrefab(uint8_t prefabIndex, bool cUp, bool cDown,
   }
 
   // Создаём ворота на соединённых дверях
-  const sf::Texture &gateOpenTex = rm.getTexture(config::DEFAUTL_GATE_OPEN);
-  const sf::Texture &gateClosedTex = rm.getTexture(config::DEFAULT_GATE_CLOSED);
+  const sf::Texture &gateOpenTex = rm.getTexture(m_biome.gateOpenTexture);
+  const sf::Texture &gateClosedTex = rm.getTexture(m_biome.gateClosedTexture);
   int gateW = doorHalfW * 2 + 1;
 
   auto addGates = [&](int gx, int gy, bool horiz) {
-    sf::Vector2<float> center =
-        tileToWorld(m_tilePos.x + gx, m_tilePos.y + gy);
+    sf::Vector2<float> center = tileToWorld(m_tilePos.x + gx, m_tilePos.y + gy);
     int half = gateW / 2;
     float step = config::TILE_SIZE;
     if (horiz) {
@@ -184,15 +158,16 @@ void Room::buildFromPrefab(uint8_t prefabIndex, bool cUp, bool cDown,
       int ty = m_tilePos.y + py;
       if (isFloor[py][px]) {
         m_floors.push_back(std::make_unique<Floor>(
-            floorTex,
-            sf::Vector2<float>{tx * config::TILE_SIZE + config::TILE_SIZE / 2.f,
-                               ty * config::TILE_SIZE + config::TILE_SIZE / 2.f}));
+            floorTex, sf::Vector2<float>{
+                          tx * config::TILE_SIZE + config::TILE_SIZE / 2.f,
+                          ty * config::TILE_SIZE + config::TILE_SIZE / 2.f}));
       } else {
         bool sortable = (py > 0 && isFloor[py - 1][px]);
         m_walls.push_back(std::make_unique<Wall>(
             wallTex,
             sf::Vector2<float>{tx * config::TILE_SIZE + config::TILE_SIZE / 2.f,
-                               ty * config::TILE_SIZE + config::TILE_SIZE / 2.f},
+                               ty * config::TILE_SIZE +
+                                   config::TILE_SIZE / 2.f},
             sortable));
       }
     }
@@ -206,9 +181,9 @@ void Room::buildFromPrefab(uint8_t prefabIndex, bool cUp, bool cDown,
 void Room::spawnChest(ResourceManager &rm) {
   if (!m_hasChestSlot || m_chest)
     return;
-  m_chest = std::make_unique<Chest>(
-      rm.getTexture(config::DEFAUTL_CHEST_CLOSED_TEXTURE),
-      rm.getTexture(config::DEFAUTL_CHEST_OPEN_TEXTURE), m_chestPos);
+  m_chest = std::make_unique<Chest>(rm.getTexture(m_biome.chestClosedTexture),
+                                    rm.getTexture(m_biome.chestOpenTexture),
+                                    m_chestPos);
 }
 
 void Room::submitRender(RenderManager &rm) {

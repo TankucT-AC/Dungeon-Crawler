@@ -12,15 +12,14 @@ Portal::Portal(const sf::Texture &tex, sf::Vector2<float> pos)
 void Portal::activate() {
   m_active = true;
   m_animator.init(config::PORTAL_FRAME_W, config::PORTAL_FRAME_H,
-                  config::PORTAL_FRAME_COUNT, config::PORTAL_FRAME_TIME);
-  sprite.setTextureRect(
-      {0, 0, config::PORTAL_FRAME_W, config::PORTAL_FRAME_H});
+                  config::PORTAL_FRAME_COUNT, config::PORTAL_FRAME_TIME,
+                  config::PORTAL_IDLE_ROW, config::PORTAL_RUN_ROW);
+  sprite.setTextureRect({0, 0, config::PORTAL_FRAME_W, config::PORTAL_FRAME_H});
   sprite.setOrigin(config::PORTAL_FRAME_W / 2.f, config::PORTAL_FRAME_H / 2.f);
-  sprite.setScale(
-      {config::PORTAL_SCALE * config::TILE_SIZE /
-           static_cast<float>(config::PORTAL_FRAME_W),
-       config::PORTAL_SCALE * config::TILE_SIZE /
-           static_cast<float>(config::PORTAL_FRAME_W)});
+  sprite.setScale({config::PORTAL_SCALE * config::TILE_SIZE /
+                       static_cast<float>(config::PORTAL_FRAME_W),
+                   config::PORTAL_SCALE * config::TILE_SIZE /
+                       static_cast<float>(config::PORTAL_FRAME_W)});
 }
 
 void Portal::update(const sf::Time &dt) {

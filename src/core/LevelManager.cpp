@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "LevelManager.hpp"
+#include "src/world/BiomeTheme.hpp"
 #include <functional>
 
-void LevelManager::buildFromData(const DungeonData &data, ResourceManager &rm) {
+void LevelManager::buildFromData(const DungeonData &data, ResourceManager &rm,
+                                 BiomeTheme &biome) {
   m_rooms.clear();
   m_corridors.clear();
 
@@ -13,12 +15,12 @@ void LevelManager::buildFromData(const DungeonData &data, ResourceManager &rm) {
   for (const auto &rp : data.rooms) {
     m_rooms.push_back(std::make_unique<Room>(
         rp.prefabIndex, sf::Vector2<int>{rp.tileX, rp.tileY}, rp.connectUp,
-        rp.connectDown, rp.connectLeft, rp.connectRight, doorHalfW, rm));
+        rp.connectDown, rp.connectLeft, rp.connectRight, doorHalfW, rm, biome));
   }
 
   for (const auto &cp : data.corridors) {
     m_corridors.push_back(std::make_unique<Corridor>(
-        cp.isHorizontal, cp.tileX, cp.tileY, cp.width, cp.height, rm));
+        cp.isHorizontal, cp.tileX, cp.tileY, cp.width, cp.height, rm, biome));
   }
 }
 

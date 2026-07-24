@@ -22,7 +22,7 @@ Engine::Engine()
                        config::WEAPON_01_FIRE_RATE, config::WEAPON_01_DAMAGE,
                        config::WEAPON_01_BULLET_SPEED, config::WEAPON_01_SCALE),
                    resourceManager);
-  roundManager.generateRound(enemies, bullets);
+  roundManager.generateRound();
   EngineCamera.setCenter(player.getPosition());
 }
 
@@ -101,7 +101,7 @@ void Engine::update(const sf::Time &dt) {
     pickupManager.trySwapWeapon(player, resourceManager, state.mousePos);
     pickupManager.tryOpenChest(levelManager, resourceManager, state.mousePos,
                                roundManager.round());
-    roundManager.tryAdvanceRound(state.mousePos, enemies, bullets);
+    roundManager.tryAdvanceRound(state.mousePos);
   }
 
   EngineCamera.setCenter(player.getPosition());

@@ -7,6 +7,7 @@
 #include "src/core/RenderManager.hpp"
 #include "src/core/ResourceManager.hpp"
 #include "src/game/Player.hpp"
+#include "src/world/BiomeTheme.hpp"
 #include "src/world/Chest.hpp"
 #include "src/world/Floor.hpp"
 #include "src/world/Gate.hpp"
@@ -42,15 +43,15 @@ private:
   CombatState m_combatState;
   std::vector<sf::Vector2<float>> m_spawnPoints;
 
+  BiomeTheme m_biome;
+
   void buildFromPrefab(uint8_t prefabIndex, bool cUp, bool cDown, bool cLeft,
                        bool cRight, int doorHalfW, ResourceManager &rm);
 
 public:
-  Room(const std::vector<std::vector<int>> &InitBlueprint,
-       sf::Vector2<float> InitPos, ResourceManager &rm);
-
   Room(uint8_t prefabIndex, sf::Vector2<int> tilePos, bool cUp, bool cDown,
-       bool cLeft, bool cRight, int doorHalfW, ResourceManager &rm);
+       bool cLeft, bool cRight, int doorHalfW, ResourceManager &rm,
+       BiomeTheme &biome);
 
   template <typename Object> bool checkCollision(const Object &object) const {
     auto hb = object.getHitbox();

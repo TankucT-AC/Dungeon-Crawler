@@ -6,6 +6,7 @@
 
 #include "src/core/RenderManager.hpp"
 #include "src/core/ResourceManager.hpp"
+#include "src/world/BiomeTheme.hpp"
 #include "src/world/Floor.hpp"
 #include "src/world/Wall.hpp"
 #include <memory>
@@ -21,7 +22,7 @@ public:
   //               false → левая/правая  стенки, проход по центру
   // width, height включают стенки.
   Corridor(bool isHorizontal, int tileX, int tileY, int width, int height,
-           ResourceManager &rm);
+           ResourceManager &rm, BiomeTheme &biome);
 
   template <typename Object> bool checkCollision(const Object &object) const {
     auto objectHitbox = object.getHitbox();

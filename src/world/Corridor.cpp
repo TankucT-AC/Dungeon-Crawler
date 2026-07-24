@@ -3,11 +3,12 @@
 
 #include "Corridor.hpp"
 #include "src/core/config.hpp"
+#include "src/world/BiomeTheme.hpp"
 
 Corridor::Corridor(bool isHorizontal, int tileX, int tileY, int width,
-                   int height, ResourceManager &rm) {
-  const sf::Texture &wallTex = rm.getTexture(config::DEFAULT_WALL_TEXTURE);
-  const sf::Texture &floorTex = rm.getTexture(config::DESERT_FLOOR_TEXTURE);
+                   int height, ResourceManager &rm, BiomeTheme &biome) {
+  const sf::Texture &wallTex = rm.getTexture(biome.wallTexture);
+  const sf::Texture &floorTex = rm.getTexture(biome.floorTexture);
 
   for (int y = 0; y < height; ++y) {
     for (int x = 0; x < width; ++x) {

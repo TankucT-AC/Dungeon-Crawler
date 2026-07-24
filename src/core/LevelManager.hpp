@@ -6,6 +6,7 @@
 
 #include "src/core/RenderManager.hpp"
 #include "src/core/ResourceManager.hpp"
+#include "src/world/BiomeTheme.hpp"
 #include "src/world/Corridor.hpp"
 #include "src/world/DungeonGenerator.hpp"
 #include "src/world/Room.hpp"
@@ -22,7 +23,8 @@ private:
 public:
   LevelManager() = default;
 
-  void buildFromData(const DungeonData &data, ResourceManager &rm);
+  void buildFromData(const DungeonData &data, ResourceManager &rm,
+                     BiomeTheme &biome);
 
   template <typename Object> bool checkCollision(const Object &object) const {
     sf::Rect<float> hb = object.getHitbox();
