@@ -5,7 +5,7 @@
 #define ROUNDMANAGER_HPP
 
 #include "CombatManager.hpp"
-#include "LevelManager.hpp"
+#include "LevelMap.hpp"
 #include "PickupManager.hpp"
 #include "ResourceManager.hpp"
 #include "src/game/Player.hpp"
@@ -26,7 +26,7 @@
 class RoundManager {
 private:
   DungeonGenerator &m_dungeonGen;
-  LevelManager &m_levelManager;
+  LevelMap &m_levelManager;
   ResourceManager &m_rm;
   Player &m_player;
   CombatManager &m_combat;
@@ -48,7 +48,7 @@ public:
   /**
    * @brief Внедрение зависимостей — все ссылки живут дольше менеджера.
    */
-  RoundManager(DungeonGenerator &dungeonGen, LevelManager &levelManager,
+  RoundManager(DungeonGenerator &dungeonGen, LevelMap &levelManager,
                ResourceManager &rm, Player &player, CombatManager &combat,
                PickupManager &pickups);
 

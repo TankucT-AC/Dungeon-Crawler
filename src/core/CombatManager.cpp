@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "CombatManager.hpp"
-#include "LevelManager.hpp"
+#include "LevelMap.hpp"
 #include "src/core/config.hpp"
 
 void CombatManager::activate(Room &room) {
@@ -69,7 +69,7 @@ bool CombatManager::checkWaveComplete(
   return true;
 }
 
-void CombatManager::updatePlayerRoom(LevelManager &levelManager,
+void CombatManager::updatePlayerRoom(LevelMap &levelManager,
                                      const Player &player) {
   auto current = levelManager.findRoomAt(player.getCenter());
   if (current.has_value()) {

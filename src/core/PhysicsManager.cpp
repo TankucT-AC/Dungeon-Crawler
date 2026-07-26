@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "PhysicsManager.hpp"
-#include "LevelManager.hpp"
+#include "LevelMap.hpp"
 #include "src/game/Bullet.hpp"
 #include "src/game/Enemy.hpp"
 #include "src/game/Player.hpp"
 
 void PhysicsManager::handleCollisions(
     std::vector<std::unique_ptr<Bullet>> &bullets,
-    std::vector<std::unique_ptr<Enemy>> &enemies, LevelManager &levelManager) {
+    std::vector<std::unique_ptr<Enemy>> &enemies, LevelMap &levelManager) {
   for (const auto &bullet : bullets) {
     for (const auto &enemy : enemies) {
       if (enemy->isBulletCollision(*bullet)) {
@@ -25,7 +25,7 @@ void PhysicsManager::handleCollisions(
 
 void PhysicsManager::cleanup(std::vector<std::unique_ptr<Bullet>> &bullets,
                              std::vector<std::unique_ptr<Enemy>> &enemies,
-                             LevelManager &levelManager) {
+                             LevelMap &levelManager) {
   bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
                                [](const auto &bullet) {
                                  return !bullet->isBulletAlive();
@@ -39,7 +39,7 @@ void PhysicsManager::cleanup(std::vector<std::unique_ptr<Bullet>> &bullets,
 }
 
 void PhysicsManager::handleCollisions(const sf::Time &dt, Player &player,
-                                      LevelManager &levelManager) {
+                                      LevelMap &levelManager) {
   sf::Vector2<float> oldPos = player.getPosition();
 
   player.move(dt, sf::Vector2<float>{player.getVelocity().x, 0.f});
@@ -55,7 +55,7 @@ void PhysicsManager::handleCollisions(const sf::Time &dt, Player &player,
 
 void PhysicsManager::moveEnemies(const sf::Time &dt,
                                  std::vector<std::unique_ptr<Enemy>> &enemies,
-                                 LevelManager &levelManager) {
+                                 LevelMap &levelManager) {
   for (auto &enemy : enemies) {
     sf::Vector2<float> oldPos = enemy->getPosition();
     enemy->move(dt, enemy->getVelocity());

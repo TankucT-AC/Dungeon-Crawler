@@ -6,26 +6,33 @@
 #include "src/world/BiomeTheme.hpp"
 #include "src/world/Prefabs.hpp"
 
+// clang-format off
 namespace {
-inline BiomeTheme DEFAULT = {config::DEFAULT_WALL_TEXTURE,
-                             config::DEFAULT_FLOOR_TEXTURE,
-                             config::DEFAUTL_GATE_OPEN,
-                             config::DEFAULT_GATE_CLOSED,
-                             config::DEFAUTL_CHEST_CLOSED_TEXTURE,
-                             config::DEFAUTL_CHEST_OPEN_TEXTURE};
+inline BiomeTheme DEFAULT = {
+config::DEFAULT_WALL_TEXTURE,
+config::DEFAULT_FLOOR_TEXTURE,
+config::DEFAUTL_GATE_OPEN,
+config::DEFAULT_GATE_CLOSED,
+config::DEFAUTL_CHEST_CLOSED_TEXTURE,
+config::DEFAUTL_CHEST_OPEN_TEXTURE
+};
 
 inline BiomeTheme DESERT = {
-    config::DESERT_WALL_TEXTURE,         config::DESERT_FLOOR_TEXTURE,
-    config::DEFAUTL_GATE_OPEN,           config::DEFAULT_GATE_CLOSED,
-    config::DESERT_CHEST_CLOSED_TEXTURE, config::DESERT_CHEST_OPEN_TEXTURE};
+  config::DESERT_WALL_TEXTURE,
+  config::DESERT_FLOOR_TEXTURE,
+  config::DEFAUTL_GATE_OPEN,
+  config::DEFAULT_GATE_CLOSED,
+  config::DESERT_CHEST_CLOSED_TEXTURE,
+  config::DESERT_CHEST_OPEN_TEXTURE
+};
 
 enum class BIOM_TYPE { DEFAULT = 1, DESERT };
 }; // namespace
+// clang-format on
 
-RoundManager::RoundManager(DungeonGenerator &dungeonGen,
-                           LevelManager &levelManager, ResourceManager &rm,
-                           Player &player, CombatManager &combat,
-                           PickupManager &pickups)
+RoundManager::RoundManager(DungeonGenerator &dungeonGen, LevelMap &levelManager,
+                           ResourceManager &rm, Player &player,
+                           CombatManager &combat, PickupManager &pickups)
     : m_dungeonGen(dungeonGen), m_levelManager(levelManager), m_rm(rm),
       m_player(player), m_combat(combat), m_pickups(pickups) {}
 

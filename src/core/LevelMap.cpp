@@ -1,12 +1,12 @@
 // Copyright (C) 2026 Magomed Gadzhiumarov
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#include "LevelManager.hpp"
+#include "LevelMap.hpp"
 #include "src/world/BiomeTheme.hpp"
 #include <functional>
 
-void LevelManager::buildFromData(const DungeonData &data, ResourceManager &rm,
-                                 BiomeTheme &biome) {
+void LevelMap::buildFromData(const DungeonData &data, ResourceManager &rm,
+                             BiomeTheme &biome) {
   m_rooms.clear();
   m_corridors.clear();
 
@@ -24,7 +24,7 @@ void LevelManager::buildFromData(const DungeonData &data, ResourceManager &rm,
   }
 }
 
-void LevelManager::submitRender(RenderManager &rm) {
+void LevelMap::submitRender(RenderManager &rm) {
   for (const auto &room : m_rooms)
     room->submitRender(rm);
   for (const auto &corr : m_corridors)
@@ -32,7 +32,7 @@ void LevelManager::submitRender(RenderManager &rm) {
 }
 
 std::optional<std::reference_wrapper<Room>>
-LevelManager::findRoomAt(sf::Vector2<float> position) {
+LevelMap::findRoomAt(sf::Vector2<float> position) {
   for (const auto &room : m_rooms)
     if (room->isObjectInRoom(position))
       return *room;
@@ -40,7 +40,7 @@ LevelManager::findRoomAt(sf::Vector2<float> position) {
 }
 
 std::optional<std::reference_wrapper<Chest>>
-LevelManager::findChestAt(sf::Vector2<float> worldPos) {
+LevelMap::findChestAt(sf::Vector2<float> worldPos) {
   for (const auto &room : m_rooms) {
     std::optional<std::reference_wrapper<Chest>> chestOpt = room->getChest();
     if (!chestOpt.has_value())
@@ -53,7 +53,7 @@ LevelManager::findChestAt(sf::Vector2<float> worldPos) {
   return std::nullopt;
 }
 
-bool LevelManager::allCombatRoomsCleared() const {
+bool LevelMap::allCombatRoomsCleared() const {
   for (const auto &room : m_rooms)
     if (room->getRoomType() == RoomType::Combat &&
         room->getCombatState() != CombatState::Cleared)

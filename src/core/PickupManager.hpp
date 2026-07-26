@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-class LevelManager;
+class LevelMap;
 
 /**
  * @brief Менеджер подбираемых предметов.
@@ -56,7 +56,7 @@ public:
    * @param worldPos Позиция курсора в мировых координатах.
    * @param round Текущий раунд (определяет выпадающее оружие).
    */
-  void tryOpenChest(LevelManager &levelManager, ResourceManager &rm,
+  void tryOpenChest(LevelMap &levelManager, ResourceManager &rm,
                     sf::Vector2<float> worldPos, int round);
 
   const std::vector<std::unique_ptr<WeaponPickup>> &getPickups() const {

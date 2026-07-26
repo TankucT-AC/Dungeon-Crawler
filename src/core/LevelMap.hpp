@@ -1,8 +1,8 @@
 // Copyright (C) 2026 Magomed Gadzhiumarov
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-#ifndef LEVELMANAGER_HPP
-#define LEVELMANAGER_HPP
+#ifndef LEVELMAP_HPP
+#define LEVELMAP_HPP
 
 #include "src/core/RenderManager.hpp"
 #include "src/core/ResourceManager.hpp"
@@ -15,13 +15,13 @@
 #include <optional>
 #include <vector>
 
-class LevelManager {
+class LevelMap {
 private:
   std::vector<std::unique_ptr<Room>> m_rooms;
   std::vector<std::unique_ptr<Corridor>> m_corridors;
 
 public:
-  LevelManager() = default;
+  LevelMap() = default;
 
   void buildFromData(const DungeonData &data, ResourceManager &rm,
                      BiomeTheme &biome);
@@ -51,4 +51,4 @@ public:
   const std::vector<std::unique_ptr<Room>> &getRooms() const { return m_rooms; }
 };
 
-#endif // LEVELMANAGER_HPP
+#endif // LEVELMAP_HPP

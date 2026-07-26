@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "PickupManager.hpp"
-#include "LevelManager.hpp"
+#include "LevelMap.hpp"
 #include "src/core/config.hpp"
 #include "src/world/Chest.hpp"
 
@@ -78,7 +78,7 @@ void PickupManager::trySwapWeapon(Player &player, ResourceManager &rm,
     m_pickups.push_back(std::move(droppedPickup));
 }
 
-void PickupManager::tryOpenChest(LevelManager &levelManager, ResourceManager &rm,
+void PickupManager::tryOpenChest(LevelMap &levelManager, ResourceManager &rm,
                                  sf::Vector2<float> worldPos, int round) {
   std::optional<std::reference_wrapper<Chest>> opt =
       levelManager.findChestAt(worldPos);
@@ -91,7 +91,7 @@ void PickupManager::tryOpenChest(LevelManager &levelManager, ResourceManager &rm
   chest.open();
   int wIdx = 1 + (round % 3);
   chest.setWeaponDrop(wIdx);
-  m_pickups.push_back(std::make_unique<WeaponPickup>(
-      rm.getTexture(weaponTexPath(wIdx)), chest.getPosition(),
-      makeWeapon(wIdx)));
+  m_pickups.push_back(
+      std::make_unique<WeaponPickup>(rm.getTexture(weaponTexPath(wIdx)),
+                                     chest.getPosition(), makeWeapon(wIdx)));
 }

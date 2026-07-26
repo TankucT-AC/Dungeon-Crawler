@@ -6,7 +6,7 @@
 
 #include "CombatManager.hpp"
 #include "InputManager.hpp"
-#include "LevelManager.hpp"
+#include "LevelMap.hpp"
 #include "PhysicsManager.hpp"
 #include "PickupManager.hpp"
 #include "RenderManager.hpp"
@@ -50,7 +50,7 @@ private:
   std::vector<std::unique_ptr<Enemy>> enemies;
   std::vector<std::unique_ptr<Bullet>> bullets;
   DungeonGenerator dungeonGenerator;
-  LevelManager levelManager;
+  LevelMap levelManager;
   CombatManager combatManager;
   PickupManager pickupManager;
   RoundManager roundManager;

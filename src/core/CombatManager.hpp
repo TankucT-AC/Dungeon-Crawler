@@ -14,7 +14,7 @@
 #include <optional>
 #include <vector>
 
-class LevelManager;
+class LevelMap;
 
 /**
  * @brief Менеджер боевых состояний.
@@ -61,7 +61,7 @@ public:
    * @param levelManager Менеджер уровня для поиска комнаты.
    * @param player Игрок (определение позиции).
    */
-  void updatePlayerRoom(LevelManager &levelManager, const Player &player);
+  void updatePlayerRoom(LevelMap &levelManager, const Player &player);
 
   /**
    * @brief Проверяет завершение волны и, при необходимости,

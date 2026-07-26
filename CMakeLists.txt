@@ -27,8 +27,8 @@ target_sources(game_core PRIVATE
     src/core/RenderManager.cpp
     src/core/PhysicsManager.hpp
     src/core/PhysicsManager.cpp
-    src/core/LevelManager.hpp
-    src/core/LevelManager.cpp
+    src/core/LevelMap.hpp
+    src/core/LevelMap.cpp
     src/core/PickupManager.hpp
     src/core/PickupManager.cpp
     src/core/RoundManager.hpp
