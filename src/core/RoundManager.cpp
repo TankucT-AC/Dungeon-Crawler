@@ -26,7 +26,15 @@ inline BiomeTheme DESERT = {
   config::DESERT_CHEST_OPEN_TEXTURE
 };
 
-enum class BIOM_TYPE { DEFAULT = 1, DESERT };
+inline BiomeTheme WINTER = {
+config::WINTER_WALL_TEXTURE,
+config::WINTER_FLOOR_TEXTURE,
+config::DEFAUTL_GATE_OPEN,
+config::DEFAULT_GATE_CLOSED,
+config::WINTER_CHEST_CLOSED_TEXTURE,
+config::WINTER_CHEST_OPEN_TEXTURE
+};
+enum class BIOM_TYPE { DEFAULT = 1, DESERT, WINTER };
 }; // namespace
 // clang-format on
 
@@ -54,6 +62,9 @@ void RoundManager::generateRound() {
   case static_cast<int>(BIOM_TYPE::DESERT):
     m_levelManager.buildFromData(dungeon, m_rm, DESERT);
     break;
+  case static_cast<int>(BIOM_TYPE::WINTER):
+    m_levelManager.buildFromData(dungeon, m_rm, WINTER);
+    break;
   default:
     m_levelManager.buildFromData(dungeon, m_rm, DEFAULT);
     break;
@@ -79,7 +90,6 @@ void RoundManager::tryAdvanceRound(sf::Vector2<float> worldPos) {
     return;
 
   m_round++;
-  // m_combat.setMaxWaves(m_round);
   if (m_round > MAX_ROUNDS)
     goToPurgatory();
   else
@@ -96,6 +106,7 @@ void RoundManager::goToPurgatory() {
   m_pickups.clear();
   float center = config::TILE_SIZE * Prefabs::PREFAB_SIZE / 2.f;
   m_player.setPosition({center, center});
+  m_portalRoom.reset();
   m_portal.reset();
 }
 

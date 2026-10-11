@@ -5,17 +5,11 @@
 #define CONFIG_PROJECT_HPP
 
 #define DEBUG_DRAW_COLLISIONS 0
-#define DEBUG_NOT_AUTH 1
+#define DEBUG_NOT_AUTH 0
 
 #include <string>
 
 namespace config {
-// ─── Сеть ───
-static const std::string IPv4 = "127.0.0.1";
-static const int PORT = 8080;
-static const std::string SCHEME_HOST_PORT =
-    "https://" + IPv4 + ":" + std::to_string(PORT);
-
 // ─── Математические константы ───
 static const float PI = 3.14159265f;
 static const int TILE_SIZE = 64;
@@ -125,6 +119,11 @@ static const std::string DESERT_WALL_TEXTURE =
     TEXTURE_PATH + "world/desert/desert_wall.png";
 static const std::string DESERT_FLOOR_TEXTURE =
     TEXTURE_PATH + "world/desert/desert_floor.png";
+
+static const std::string WINTER_WALL_TEXTURE =
+    TEXTURE_PATH + "world/winter/winter_wall.png";
+static const std::string WINTER_FLOOR_TEXTURE =
+    TEXTURE_PATH + "world/winter/winter_floor.png";
 // ─── Сундуки ───
 static const std::string DEFAUTL_CHEST_CLOSED_TEXTURE =
     TEXTURE_PATH + "world/default/default_chest_closed.png";
@@ -135,6 +134,11 @@ static const std::string DESERT_CHEST_CLOSED_TEXTURE =
     TEXTURE_PATH + "world/desert/desert_chest_closed.png";
 static const std::string DESERT_CHEST_OPEN_TEXTURE =
     TEXTURE_PATH + "world/desert/desert_chest_open.png";
+
+static const std::string WINTER_CHEST_CLOSED_TEXTURE =
+    TEXTURE_PATH + "world/winter/winter_chest_closed.png";
+static const std::string WINTER_CHEST_OPEN_TEXTURE =
+    TEXTURE_PATH + "world/winter/winter_chest_open.png";
 // ─── Ворота ───
 static const std::string DEFAULT_GATE_CLOSED =
     TEXTURE_PATH + "world/default_gate_closed.jpg";
