@@ -15,8 +15,8 @@ Corridor::Corridor(bool isHorizontal, int tileX, int tileY, int width,
       int gx = tileX + x;
       int gy = tileY + y;
       sf::Vector2<float> pos = {
-          gx * config::TILE_SIZE + config::TILE_SIZE / 2.f,
-          gy * config::TILE_SIZE + config::TILE_SIZE / 2.f};
+          gx * config::math::kTileSize + config::math::kTileSize / 2.f,
+          gy * config::math::kTileSize + config::math::kTileSize / 2.f};
 
       bool isWall = false;
       if (isHorizontal) {

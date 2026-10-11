@@ -7,35 +7,28 @@
 #include "src/world/Chest.hpp"
 
 namespace {
+/** @brief Спека оружия по индексу: 1 — пистолет, 2 — винтовка, 3 — ПП. */
+const config::weapons::Spec &weaponSpec(int idx) {
+  if (idx == 2)
+    return config::weapons::kRifle;
+  if (idx == 3)
+    return config::weapons::kSmg;
+  return config::weapons::kPistol;
+}
+
 /**
  * @brief Создаёт оружие по индексу (статы из config).
  * @param idx Индекс оружия: 1 — пистолет, 2 — винтовка, 3 — ПП.
  */
 std::unique_ptr<Weapon> makeWeapon(int idx) {
-  if (idx == 2)
-    return std::make_unique<RangedWeapon>(
-        config::WEAPON_02_TEX, config::WEAPON_02_BULLET,
-        config::WEAPON_02_FIRE_RATE, config::WEAPON_02_DAMAGE,
-        config::WEAPON_02_BULLET_SPEED, config::WEAPON_02_SCALE);
-  if (idx == 3)
-    return std::make_unique<RangedWeapon>(
-        config::WEAPON_03_TEX, config::WEAPON_03_BULLET,
-        config::WEAPON_03_FIRE_RATE, config::WEAPON_03_DAMAGE,
-        config::WEAPON_03_BULLET_SPEED, config::WEAPON_03_SCALE);
-  return std::make_unique<RangedWeapon>(
-      config::WEAPON_01_TEX, config::WEAPON_01_BULLET,
-      config::WEAPON_01_FIRE_RATE, config::WEAPON_01_DAMAGE,
-      config::WEAPON_01_BULLET_SPEED, config::WEAPON_01_SCALE);
+  const auto &spec = weaponSpec(idx);
+  return std::make_unique<RangedWeapon>(spec.texture, spec.bulletTexture,
+                                        spec.fireRate, spec.damage,
+                                        spec.bulletSpeed, spec.scale);
 }
 
 /** @brief Путь к текстуре оружия по индексу. */
-const std::string &weaponTexPath(int idx) {
-  if (idx == 2)
-    return config::WEAPON_02_TEX;
-  if (idx == 3)
-    return config::WEAPON_03_TEX;
-  return config::WEAPON_01_TEX;
-}
+const std::string &weaponTexPath(int idx) { return weaponSpec(idx).texture; }
 } // namespace
 
 std::unique_ptr<WeaponPickup> PickupManager::swapWeapon(Player &player,
@@ -45,7 +38,8 @@ std::unique_ptr<WeaponPickup> PickupManager::swapWeapon(Player &player,
   if (!newWeapon)
     return nullptr;
 
-  if (player.getWeaponCount() < static_cast<size_t>(config::MAX_WEAPON_SLOTS)) {
+  if (player.getWeaponCount() <
+      static_cast<size_t>(config::weapons::kMaxSlots)) {
     player.addWeapon(std::move(newWeapon), rm);
     return nullptr;
   }

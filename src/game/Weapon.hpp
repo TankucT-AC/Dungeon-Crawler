@@ -53,17 +53,17 @@ public:
     if (len > 0)
       dir /= len;
     auto radians = std::atan2(dir.y, dir.x);
-    auto degrees = radians * 180.f / config::PI;
+    auto degrees = radians * 180.f / config::math::kPi;
     bullets.push_back(std::make_unique<Bullet>(
         rm.getTexture(m_bulletTexPath), pos, dir, degrees, m_bulletSpeed,
-        config::BULLET_DEFAULT_LIFETIME, m_damage));
+        config::bullet::kDefaultLifetime, m_damage));
   }
 };
 
 class MeleeWeapon : public Weapon {
 public:
   MeleeWeapon(const std::string &weaponTex, float damage)
-      : Weapon(weaponTex, "", config::MELEE_FIRE_RATE, damage, 0.f) {}
+      : Weapon(weaponTex, "", config::weapons::kMeleeFireRate, damage, 0.f) {}
 
   void fire(sf::Vector2<float> pos, sf::Vector2<float> dir,
             std::vector<std::unique_ptr<Bullet>> &bullets,

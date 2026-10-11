@@ -33,3 +33,19 @@ target_link_libraries(test_auth PRIVATE
 )
 include(GoogleTest)
 gtest_discover_tests(test_auth)
+
+add_executable(test_app_options
+    test_app_options.cpp
+)
+
+target_include_directories(test_app_options PRIVATE
+    ${CMAKE_SOURCE_DIR}
+)
+
+target_link_libraries(test_app_options PRIVATE
+    game_core
+    gtest
+    gtest_main
+    pthread
+)
+gtest_discover_tests(test_app_options)

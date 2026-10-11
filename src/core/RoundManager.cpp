@@ -9,30 +9,30 @@
 // clang-format off
 namespace {
 inline BiomeTheme DEFAULT = {
-config::DEFAULT_WALL_TEXTURE,
-config::DEFAULT_FLOOR_TEXTURE,
-config::DEFAUTL_GATE_OPEN,
-config::DEFAULT_GATE_CLOSED,
-config::DEFAUTL_CHEST_CLOSED_TEXTURE,
-config::DEFAUTL_CHEST_OPEN_TEXTURE
+config::textures::wall::kDefault,
+config::textures::floor::kDefault,
+config::textures::gate::kOpen,
+config::textures::gate::kClosed,
+config::textures::chest::kClosedDefault,
+config::textures::chest::kOpenDefault
 };
 
 inline BiomeTheme DESERT = {
-  config::DESERT_WALL_TEXTURE,
-  config::DESERT_FLOOR_TEXTURE,
-  config::DEFAUTL_GATE_OPEN,
-  config::DEFAULT_GATE_CLOSED,
-  config::DESERT_CHEST_CLOSED_TEXTURE,
-  config::DESERT_CHEST_OPEN_TEXTURE
+  config::textures::wall::kDesert,
+  config::textures::floor::kDesert,
+  config::textures::gate::kOpen,
+  config::textures::gate::kClosed,
+  config::textures::chest::kClosedDesert,
+  config::textures::chest::kOpenDesert
 };
 
 inline BiomeTheme WINTER = {
-config::WINTER_WALL_TEXTURE,
-config::WINTER_FLOOR_TEXTURE,
-config::DEFAUTL_GATE_OPEN,
-config::DEFAULT_GATE_CLOSED,
-config::WINTER_CHEST_CLOSED_TEXTURE,
-config::WINTER_CHEST_OPEN_TEXTURE
+config::textures::wall::kWinter,
+config::textures::floor::kWinter,
+config::textures::gate::kOpen,
+config::textures::gate::kClosed,
+config::textures::chest::kClosedWinter,
+config::textures::chest::kOpenWinter
 };
 enum class BIOM_TYPE { DEFAULT = 1, DESERT, WINTER };
 }; // namespace
@@ -70,10 +70,12 @@ void RoundManager::generateRound() {
     break;
   }
   m_player.setPosition(dungeon.playerSpawnPoint);
-  m_player.initAnimation(config::PLAYER_FRAME_W, config::PLAYER_FRAME_H,
-                         config::PLAYER_FRAME_COUNT, config::PLAYER_FRAME_TIME,
-                         config::PLAYER_IDLE_ROW, config::PLAYER_RUN_ROW);
-  m_player.getSprite().setScale({config::PLAYER_SCALE, config::PLAYER_SCALE});
+  m_player.initAnimation(config::player::kFrameW, config::player::kFrameH,
+                         config::player::kFrameCount,
+                         config::player::kFrameTime, config::player::kIdleRow,
+                         config::player::kRunRow);
+  m_player.getSprite().setScale(
+      {config::player::kScale, config::player::kScale});
 
   for (const auto &r : m_levelManager.getRooms()) {
     if (r->getRoomType() == RoomType::Portal) {
@@ -104,7 +106,7 @@ void RoundManager::goToPurgatory() {
   purgData.corridorWidth = 1;
   m_levelManager.buildFromData(purgData, m_rm, DEFAULT);
   m_pickups.clear();
-  float center = config::TILE_SIZE * Prefabs::PREFAB_SIZE / 2.f;
+  float center = config::math::kTileSize * Prefabs::PREFAB_SIZE / 2.f;
   m_player.setPosition({center, center});
   m_portalRoom.reset();
   m_portal.reset();
@@ -114,7 +116,7 @@ void RoundManager::spawnPortal() {
   if (!m_portalRoom.has_value())
     return;
   m_portal =
-      std::make_unique<Portal>(m_rm.getTexture(config::PORTAL_SPRITESHEET),
+      std::make_unique<Portal>(m_rm.getTexture(config::portal::kSpritesheet),
                                m_portalRoom.value().get().getChestPos());
   m_portal->activate();
 }

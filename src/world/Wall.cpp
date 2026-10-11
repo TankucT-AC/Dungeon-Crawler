@@ -7,22 +7,22 @@
 Wall::Wall(const sf::Texture &InitTexture, sf::Vector2<float> InitPos,
            bool isSortable)
     : Entity(InitTexture, InitPos), m_isSortable(isSortable) {
-  float scale = config::TILE_SIZE / sprite.getLocalBounds().width;
+  float scale = config::math::kTileSize / sprite.getLocalBounds().width;
   sprite.setScale({scale, scale});
 }
 
-void Wall::draw(sf::RenderWindow &window) const {
+void Wall::draw(sf::RenderWindow &window, DebugDraw debug) const {
   window.draw(sprite);
 
-#if DEBUG_DRAW_COLLISIONS
-  sf::Rect<float> hb = this->getHitbox();
-  sf::RectangleShape debugRect({hb.width, hb.height});
-  debugRect.setPosition(hb.left, hb.top);
-  debugRect.setFillColor(sf::Color::Transparent);
-  debugRect.setOutlineColor(sf::Color::Red);
-  debugRect.setOutlineThickness(1.f);
-  window.draw(debugRect);
-#endif
+  if (debug.collisions) {
+    sf::Rect<float> hb = this->getHitbox();
+    sf::RectangleShape debugRect({hb.width, hb.height});
+    debugRect.setPosition(hb.left, hb.top);
+    debugRect.setFillColor(sf::Color::Transparent);
+    debugRect.setOutlineColor(sf::Color::Red);
+    debugRect.setOutlineThickness(config::debug::kOutlineThickness);
+    window.draw(debugRect);
+  }
 }
 
 float Wall::getLayerY() const {

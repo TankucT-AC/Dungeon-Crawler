@@ -26,7 +26,7 @@ void RenderManager::draw() {
             });
 
   for (IDrawAble &object : renderQueue) {
-    object.draw(renderWindow);
+    object.draw(renderWindow, debugDraw_);
   }
 
   renderQueue.clear();
