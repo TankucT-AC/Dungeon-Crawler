@@ -20,6 +20,9 @@ public:
   virtual float getHealth() = 0;
 };
 
+/**
+ * @brief Интерфейс сущности, способной наносить урон.
+ */
 class IDamageDealer {
 public:
   virtual float getDamage() = 0;

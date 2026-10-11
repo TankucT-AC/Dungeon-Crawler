@@ -23,7 +23,6 @@ public:
   }
 
   std::unique_ptr<Weapon> takeWeapon() { return std::move(m_weapon); }
-  Weapon *peekWeapon() const { return m_weapon.get(); }
 
   virtual void update(const sf::Time &dt) override {}
   virtual void draw(sf::RenderWindow &window) const override {
