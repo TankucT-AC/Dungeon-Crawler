@@ -18,14 +18,15 @@ public:
   WeaponPickup(const sf::Texture &tex, sf::Vector2<float> pos,
                std::unique_ptr<Weapon> weapon)
       : Entity(tex, pos), m_weapon(std::move(weapon)) {
-    float scale = config::TILE_SIZE / sprite.getLocalBounds().width;
+    float scale = config::math::kTileSize / sprite.getLocalBounds().width;
     sprite.setScale({scale, scale});
   }
 
   std::unique_ptr<Weapon> takeWeapon() { return std::move(m_weapon); }
 
   virtual void update(const sf::Time &dt) override {}
-  virtual void draw(sf::RenderWindow &window) const override {
+  virtual void draw(sf::RenderWindow &window,
+                    DebugDraw /*debug*/) const override {
     window.draw(sprite);
   }
   virtual float getLayerY() const override {

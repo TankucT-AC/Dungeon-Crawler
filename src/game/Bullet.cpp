@@ -13,7 +13,7 @@ Bullet::Bullet(const sf::Texture &InitTexture,
       velocity({0.f, 0.f}) {
   sf::Rect<float> b = sprite.getLocalBounds();
   sprite.setOrigin(b.width / 2.f, b.height / 2.f);
-  sprite.setScale(config::BULLET_SCALE, config::BULLET_SCALE);
+  sprite.setScale(config::bullet::kScale, config::bullet::kScale);
   sprite.setRotation(InitDegree);
 }
 
@@ -28,18 +28,18 @@ void Bullet::update(const sf::Time &dt) {
   }
 }
 
-void Bullet::draw(sf::RenderWindow &window) const {
+void Bullet::draw(sf::RenderWindow &window, DebugDraw debug) const {
   window.draw(sprite);
 
-#if DEBUG_DRAW_COLLISIONS
-  sf::Rect<float> hb = this->getHitbox();
-  sf::RectangleShape debugRect({hb.width, hb.height});
-  debugRect.setPosition(hb.left, hb.top);
-  debugRect.setFillColor(sf::Color::Transparent);
-  debugRect.setOutlineColor(sf::Color::Red);
-  debugRect.setOutlineThickness(config::DEBUG_OUTLINE_THICKNESS);
-  window.draw(debugRect);
-#endif
+  if (debug.collisions) {
+    sf::Rect<float> hb = this->getHitbox();
+    sf::RectangleShape debugRect({hb.width, hb.height});
+    debugRect.setPosition(hb.left, hb.top);
+    debugRect.setFillColor(sf::Color::Transparent);
+    debugRect.setOutlineColor(sf::Color::Red);
+    debugRect.setOutlineThickness(config::debug::kOutlineThickness);
+    window.draw(debugRect);
+  }
 }
 
 void Bullet::move(const sf::Time &dt, const sf::Vector2<float> &offset) {
@@ -51,9 +51,9 @@ float Bullet::getDamage() { return damage; }
 bool Bullet::isBulletAlive() const { return !dead; }
 sf::Rect<float> Bullet::getHitbox() const {
   sf::Vector2f pos = sprite.getPosition();
-  return sf::Rect<float>(pos.x - config::BULLET_HITBOX_W / 2.f,
-                         pos.y - config::BULLET_HITBOX_H / 2.f,
-                         config::BULLET_HITBOX_W, config::BULLET_HITBOX_H);
+  return sf::Rect<float>(pos.x - config::bullet::kHitboxW / 2.f,
+                         pos.y - config::bullet::kHitboxH / 2.f,
+                         config::bullet::kHitboxW, config::bullet::kHitboxH);
 }
 
 float Bullet::getLayerY() const {

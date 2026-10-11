@@ -10,7 +10,7 @@ class Floor : public Entity, public IDrawAble {
 public:
   Floor(const sf::Texture &InitTexture, sf::Vector2<float> InitPos);
   virtual void update(const sf::Time &dt) override {}
-  virtual void draw(sf::RenderWindow &window) const override;
+  virtual void draw(sf::RenderWindow &window, DebugDraw debug) const override;
   virtual float getLayerY() const override;
 };
 

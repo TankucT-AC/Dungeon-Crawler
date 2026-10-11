@@ -26,7 +26,7 @@ public:
   bool isOpen() const { return m_state == State::Open; }
 
   virtual void update(const sf::Time &dt) override {}
-  virtual void draw(sf::RenderWindow &window) const override;
+  virtual void draw(sf::RenderWindow &window, DebugDraw debug) const override;
   virtual float getLayerY() const override;
 };
 

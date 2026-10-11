@@ -7,20 +7,21 @@
 #include <SFML/System/Vector2.hpp>
 #include <memory>
 
-Engine::Engine()
-    : player(resourceManager.getTexture(config::PLAYER_SPRITESHEET),
+Engine::Engine(DebugDraw debug)
+    : player(resourceManager.getTexture(config::player::kSpritesheet),
              sf::Vector2<float>{0.f, 0.f}),
-      EngineVideoMode(config::GAMEBOARD_WIDTH, config::GAMEBOARD_HEIGHT),
+      EngineVideoMode(config::window::kWidth, config::window::kHeight),
       EngineWindow(std::make_unique<sf::RenderWindow>(EngineVideoMode,
-                                                      config::GAMEBOARD_NAME)),
+                                                      config::window::kTitle)),
       EngineRender(*EngineWindow),
       dungeonGenerator(DungeonGenerator::defaultConfig()),
       roundManager(dungeonGenerator, levelManager, resourceManager, player,
                    combatManager, pickupManager) {
+  EngineRender.setDebugDraw(debug);
+  const auto &pistol = config::weapons::kPistol;
   player.addWeapon(std::make_unique<RangedWeapon>(
-                       config::WEAPON_01_TEX, config::WEAPON_01_BULLET,
-                       config::WEAPON_01_FIRE_RATE, config::WEAPON_01_DAMAGE,
-                       config::WEAPON_01_BULLET_SPEED, config::WEAPON_01_SCALE),
+                       pistol.texture, pistol.bulletTexture, pistol.fireRate,
+                       pistol.damage, pistol.bulletSpeed, pistol.scale),
                    resourceManager);
   roundManager.generateRound();
   EngineCamera.setCenter(player.getPosition());

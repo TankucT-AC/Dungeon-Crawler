@@ -4,6 +4,7 @@
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
 
+#include "src/core/DebugDraw.hpp"
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -47,7 +48,7 @@ public:
 class IDrawAble {
 public:
   virtual ~IDrawAble() = default;
-  virtual void draw(sf::RenderWindow &window) const = 0;
+  virtual void draw(sf::RenderWindow &window, DebugDraw debug) const = 0;
   virtual float getLayerY() const = 0;
 };
 

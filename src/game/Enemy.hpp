@@ -25,10 +25,11 @@ private:
 
 public:
   Enemy(const sf::Texture &InitTexture, sf::Vector2<float> InitPos,
-        float InitSpeed = config::ENEMY_DEFAULT_SPEED,
-        float InitHealth = config::ENEMY_DEFAULT_HEALTH);
+        float InitSpeed = config::enemy::kDefaultSpeed,
+        float InitHealth = config::enemy::kDefaultHealth);
 
-  void initAnimation(int frameW, int frameH, int frameCount, float frameTime, int idleRow = 0, int runRow = 0) {
+  void initAnimation(int frameW, int frameH, int frameCount, float frameTime,
+                     int idleRow = 0, int runRow = 0) {
     m_animator.init(frameW, frameH, frameCount, frameTime, idleRow, runRow);
     sprite.setTextureRect({0, idleRow * frameH, frameW, frameH});
     sprite.setOrigin(frameW / 2.f, frameH / 2.f);
@@ -37,7 +38,7 @@ public:
   virtual void move(const sf::Time &dt,
                     const sf::Vector2<float> &offset) override;
   virtual void update(const sf::Time &dt) override;
-  virtual void draw(sf::RenderWindow &window) const override;
+  virtual void draw(sf::RenderWindow &window, DebugDraw debug) const override;
   virtual void takeDamage(float amount) override;
   virtual float getHealth() override { return health; }
   virtual float getLayerY() const override;

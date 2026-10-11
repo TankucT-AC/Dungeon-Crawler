@@ -41,13 +41,13 @@ void CombatManager::spawnWave(Room &room,
 
   m_combatWave++;
   enemies.clear();
-  const sf::Texture &enemyTex = rm.getTexture(config::ENEMY_SPRITESHEET);
+  const sf::Texture &enemyTex = rm.getTexture(config::enemy::kSpritesheet);
 
   for (const sf::Vector2<float> &pt : pts) {
     std::unique_ptr<Enemy> e = std::make_unique<Enemy>(enemyTex, pt);
-    e->initAnimation(config::ENEMY_FRAME_W, config::ENEMY_FRAME_H,
-                     config::ENEMY_FRAME_COUNT, config::ENEMY_FRAME_TIME);
-    e->getSprite().setScale({config::ENEMY_SCALE, config::ENEMY_SCALE});
+    e->initAnimation(config::enemy::kFrameW, config::enemy::kFrameH,
+                     config::enemy::kFrameCount, config::enemy::kFrameTime);
+    e->getSprite().setScale({config::enemy::kScale, config::enemy::kScale});
     enemies.push_back(std::move(e));
   }
 }

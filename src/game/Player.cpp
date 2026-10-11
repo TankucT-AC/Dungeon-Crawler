@@ -18,31 +18,31 @@ void Player::move(const sf::Time &dt, const sf::Vector2<float> &offset) {
   sprite.move(dt.asSeconds() * offset);
 }
 
-void Player::draw(sf::RenderWindow &window) const {
+void Player::draw(sf::RenderWindow &window, DebugDraw debug) const {
   window.draw(sprite);
   if (m_activeWeapon >= 0 && m_weaponSprite.getTexture()) {
     window.draw(m_weaponSprite);
 
-#if DEBUG_DRAW_COLLISIONS
-    auto gb = m_weaponSprite.getGlobalBounds();
-    sf::RectangleShape debugWeapon({gb.width, gb.height});
-    debugWeapon.setPosition(gb.left, gb.top);
-    debugWeapon.setFillColor(sf::Color::Transparent);
-    debugWeapon.setOutlineColor(sf::Color::Yellow);
-    debugWeapon.setOutlineThickness(config::DEBUG_OUTLINE_THICKNESS);
-    window.draw(debugWeapon);
-#endif
+    if (debug.collisions) {
+      auto gb = m_weaponSprite.getGlobalBounds();
+      sf::RectangleShape debugWeapon({gb.width, gb.height});
+      debugWeapon.setPosition(gb.left, gb.top);
+      debugWeapon.setFillColor(sf::Color::Transparent);
+      debugWeapon.setOutlineColor(sf::Color::Yellow);
+      debugWeapon.setOutlineThickness(config::debug::kOutlineThickness);
+      window.draw(debugWeapon);
+    }
   }
 
-#if DEBUG_DRAW_COLLISIONS
-  auto hb = getHitbox();
-  sf::RectangleShape debugRect({hb.width, hb.height});
-  debugRect.setPosition(hb.left, hb.top);
-  debugRect.setFillColor(sf::Color::Transparent);
-  debugRect.setOutlineColor(sf::Color::Red);
-  debugRect.setOutlineThickness(config::DEBUG_OUTLINE_THICKNESS);
-  window.draw(debugRect);
-#endif
+  if (debug.collisions) {
+    auto hb = getHitbox();
+    sf::RectangleShape debugRect({hb.width, hb.height});
+    debugRect.setPosition(hb.left, hb.top);
+    debugRect.setFillColor(sf::Color::Transparent);
+    debugRect.setOutlineColor(sf::Color::Red);
+    debugRect.setOutlineThickness(config::debug::kOutlineThickness);
+    window.draw(debugRect);
+  }
 }
 
 void Player::setMousePos(const sf::Vector2<float> &pos) { m_mousePos = pos; }
@@ -67,19 +67,19 @@ void Player::update(const sf::Time &dt) {
   m_animator.update(dt.asSeconds(), moving, sprite);
 
   bool facingLeft = (m_mousePos.x < sprite.getPosition().x);
-  sprite.setScale(facingLeft ? -config::PLAYER_SCALE : config::PLAYER_SCALE,
-                  config::PLAYER_SCALE);
+  sprite.setScale(facingLeft ? -config::player::kScale : config::player::kScale,
+                  config::player::kScale);
 }
 
 void Player::syncWeaponTransform() {
   sf::Vector2<float> playerPos = sprite.getPosition();
   sf::Vector2<float> dir = m_mousePos - playerPos;
   auto radians = std::atan2(dir.y, dir.x);
-  auto degrees = radians * 180.f / config::PI;
+  auto degrees = radians * 180.f / config::math::kPi;
   bool facingLeft = (m_mousePos.x < playerPos.x);
 
   m_weaponSprite.setPosition(playerPos.x,
-                             playerPos.y + config::PLAYER_WEAPON_Y_OFFSET);
+                             playerPos.y + config::player::kWeaponYOffset);
   m_weaponSprite.setRotation(degrees);
   float sx = std::abs(m_weaponSprite.getScale().x);
   float sy = std::abs(m_weaponSprite.getScale().y);
@@ -99,9 +99,9 @@ float Player::getLayerY() const {
 
 sf::FloatRect Player::getHitbox() const {
   auto pos = sprite.getPosition();
-  return {pos.x - config::PLAYER_HITBOX_HALF_W,
-          pos.y - config::PLAYER_HITBOX_HALF_H + config::PLAYER_HITBOX_Y_OFFSET,
-          config::PLAYER_HITBOX_W, config::PLAYER_HITBOX_H};
+  return {pos.x - config::player::kHitboxHalfW,
+          pos.y - config::player::kHitboxHalfH + config::player::kHitboxYOffset,
+          config::player::kHitboxW, config::player::kHitboxH};
 }
 
 // ─── Оружие ───
@@ -162,7 +162,7 @@ void Player::handlePlayer(const PlayerInputState &input, ResourceManager &rm,
       // Дуло: от позиции оружия (а не центра игрока) вдоль направления прицела
       // на половину отмасштабированной ширины спрайта — кончик ствола.
       sf::Vector2<float> weaponPos = {
-          getPosition().x, getPosition().y + config::PLAYER_WEAPON_Y_OFFSET};
+          getPosition().x, getPosition().y + config::player::kWeaponYOffset};
       sf::Vector2<float> dir = input.mousePos - weaponPos;
       float len = std::sqrt(dir.x * dir.x + dir.y * dir.y);
       if (len > 0)

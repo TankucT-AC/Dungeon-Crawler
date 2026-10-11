@@ -9,25 +9,27 @@ Gate::Gate(const sf::Texture &openTex, const sf::Texture &closedTex,
            sf::Vector2<float> pos)
     : Entity(openTex, pos), m_state(State::Open), m_openTex(openTex),
       m_closedTex(closedTex) {
-  float scale = config::TILE_SIZE / sprite.getLocalBounds().width;
+  float scale = config::math::kTileSize / sprite.getLocalBounds().width;
   sprite.setScale({scale, scale});
 }
 
 void Gate::setOpen() {
   m_state = State::Open;
   sprite.setTexture(m_openTex);
-  float scale = config::TILE_SIZE / sprite.getLocalBounds().width;
+  float scale = config::math::kTileSize / sprite.getLocalBounds().width;
   sprite.setScale({scale, scale});
 }
 
 void Gate::setClosed() {
   m_state = State::Closed;
   sprite.setTexture(m_closedTex);
-  float scale = config::TILE_SIZE / sprite.getLocalBounds().width;
+  float scale = config::math::kTileSize / sprite.getLocalBounds().width;
   sprite.setScale({scale, scale});
 }
 
-void Gate::draw(sf::RenderWindow &window) const { window.draw(sprite); }
+void Gate::draw(sf::RenderWindow &window, DebugDraw /*debug*/) const {
+  window.draw(sprite);
+}
 
 float Gate::getLayerY() const {
   // sf::Rect<float> hb = sprite.getGlobalBounds();

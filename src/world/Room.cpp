@@ -22,8 +22,8 @@ std::string flattenPrefab(uint8_t index) {
 }
 
 sf::Vector2<float> tileToWorld(int tx, int ty) {
-  return {tx * config::TILE_SIZE + config::TILE_SIZE / 2.f,
-          ty * config::TILE_SIZE + config::TILE_SIZE / 2.f};
+  return {tx * config::math::kTileSize + config::math::kTileSize / 2.f,
+          ty * config::math::kTileSize + config::math::kTileSize / 2.f};
 }
 } // namespace
 
@@ -128,7 +128,7 @@ void Room::buildFromPrefab(uint8_t prefabIndex, bool cUp, bool cDown,
   auto addGates = [&](int gx, int gy, bool horiz) {
     sf::Vector2<float> center = tileToWorld(m_tilePos.x + gx, m_tilePos.y + gy);
     int half = gateW / 2;
-    float step = config::TILE_SIZE;
+    float step = config::math::kTileSize;
     if (horiz) {
       for (int ox = -half; ox <= half; ++ox)
         m_gates.push_back(std::make_unique<Gate>(
@@ -158,16 +158,17 @@ void Room::buildFromPrefab(uint8_t prefabIndex, bool cUp, bool cDown,
       int ty = m_tilePos.y + py;
       if (isFloor[py][px]) {
         m_floors.push_back(std::make_unique<Floor>(
-            floorTex, sf::Vector2<float>{
-                          tx * config::TILE_SIZE + config::TILE_SIZE / 2.f,
-                          ty * config::TILE_SIZE + config::TILE_SIZE / 2.f}));
+            floorTex,
+            sf::Vector2<float>{
+                tx * config::math::kTileSize + config::math::kTileSize / 2.f,
+                ty * config::math::kTileSize + config::math::kTileSize / 2.f}));
       } else {
         bool sortable = (py > 0 && isFloor[py - 1][px]);
         m_walls.push_back(std::make_unique<Wall>(
             wallTex,
-            sf::Vector2<float>{tx * config::TILE_SIZE + config::TILE_SIZE / 2.f,
-                               ty * config::TILE_SIZE +
-                                   config::TILE_SIZE / 2.f},
+            sf::Vector2<float>{
+                tx * config::math::kTileSize + config::math::kTileSize / 2.f,
+                ty * config::math::kTileSize + config::math::kTileSize / 2.f},
             sortable));
       }
     }

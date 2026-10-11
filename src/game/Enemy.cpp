@@ -15,18 +15,18 @@ void Enemy::move(const sf::Time &dt, const sf::Vector2<float> &offset) {
   sprite.move(dt.asSeconds() * offset);
 }
 
-void Enemy::draw(sf::RenderWindow &window) const {
+void Enemy::draw(sf::RenderWindow &window, DebugDraw debug) const {
   window.draw(sprite);
 
-#if DEBUG_DRAW_COLLISIONS
-  auto hb = getHitbox();
-  sf::RectangleShape debugRect({hb.width, hb.height});
-  debugRect.setPosition(hb.left, hb.top);
-  debugRect.setFillColor(sf::Color::Transparent);
-  debugRect.setOutlineColor(sf::Color::Red);
-  debugRect.setOutlineThickness(config::DEBUG_OUTLINE_THICKNESS);
-  window.draw(debugRect);
-#endif
+  if (debug.collisions) {
+    auto hb = getHitbox();
+    sf::RectangleShape debugRect({hb.width, hb.height});
+    debugRect.setPosition(hb.left, hb.top);
+    debugRect.setFillColor(sf::Color::Transparent);
+    debugRect.setOutlineColor(sf::Color::Red);
+    debugRect.setOutlineThickness(config::debug::kOutlineThickness);
+    window.draw(debugRect);
+  }
 }
 
 void Enemy::update(const sf::Time &dt) {

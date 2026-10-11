@@ -22,12 +22,12 @@ private:
 public:
   Bullet(const sf::Texture &InitTexture, const sf::Vector2<float> &InitStartPos,
          const sf::Vector2<float> &InitDirection, float InitDegree = 0.f,
-         float InitSpeed = config::BULLET_DEFAULT_SPEED,
-         float InitLifetime = config::BULLET_DEFAULT_LIFETIME,
-         float InitDamage = config::BULLET_DEFAULT_DAMAGE);
+         float InitSpeed = config::bullet::kDefaultSpeed,
+         float InitLifetime = config::bullet::kDefaultLifetime,
+         float InitDamage = config::bullet::kDefaultDamage);
 
   virtual void update(const sf::Time &dt) override;
-  virtual void draw(sf::RenderWindow &window) const override;
+  virtual void draw(sf::RenderWindow &window, DebugDraw debug) const override;
   virtual void move(const sf::Time &dt,
                     const sf::Vector2<float> &offset) override;
   virtual sf::Rect<float> getHitbox() const override;

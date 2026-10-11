@@ -12,6 +12,7 @@
 #include "RenderManager.hpp"
 #include "ResourceManager.hpp"
 #include "RoundManager.hpp"
+#include "src/core/DebugDraw.hpp"
 #include "src/game/Bullet.hpp"
 #include "src/game/Enemy.hpp"
 #include "src/game/Player.hpp"
@@ -57,7 +58,7 @@ private:
 
 public:
   /** @brief Инициализирует окно, менеджеры, игрока и первый раунд. */
-  Engine();
+  explicit Engine(DebugDraw debug = {});
 
   /** @brief Главный игровой цикл. */
   void run();

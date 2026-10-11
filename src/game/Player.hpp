@@ -37,8 +37,8 @@ private:
 
 public:
   Player(const sf::Texture &InitTexture, sf::Vector2<float> InitPos,
-         float InitSpeed = config::PLAYER_DEFAULT_SPEED,
-         float InitShootDelay = config::PLAYER_DEFAULT_SHOOT_DELAY);
+         float InitSpeed = config::player::kDefaultSpeed,
+         float InitShootDelay = config::player::kDefaultShootDelay);
 
   void initAnimation(int frameW, int frameH, int frameCount, float frameTime,
                      int idleRow = 0, int runRow = 1) {
@@ -50,7 +50,7 @@ public:
   virtual void move(const sf::Time &dt,
                     const sf::Vector2<float> &offset) override;
   virtual void update(const sf::Time &dt) override;
-  virtual void draw(sf::RenderWindow &window) const override;
+  virtual void draw(sf::RenderWindow &window, DebugDraw debug) const override;
   virtual sf::FloatRect getHitbox() const override;
   virtual float getLayerY() const override;
 

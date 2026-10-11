@@ -228,11 +228,11 @@ void DungeonGenerator::assembleData(DungeonData &data) {
         for (int py = 0; py < roomSz && !playerSpawnFound; ++py)
           for (int px = 0; px < roomSz && !playerSpawnFound; ++px)
             if (prefab[py * roomSz + px] == '@') {
-              data.playerSpawnPoint = sf::Vector2<float>(
-                  (rp.tileX + px) * config::TILE_SIZE +
-                      config::TILE_SIZE / 2.f,
-                  (rp.tileY + py) * config::TILE_SIZE +
-                      config::TILE_SIZE / 2.f);
+              data.playerSpawnPoint =
+                  sf::Vector2<float>((rp.tileX + px) * config::math::kTileSize +
+                                         config::math::kTileSize / 2.f,
+                                     (rp.tileY + py) * config::math::kTileSize +
+                                         config::math::kTileSize / 2.f);
               playerSpawnFound = true;
             }
       }

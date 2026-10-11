@@ -18,6 +18,8 @@ add_library(game_core STATIC
 
 # Core
 target_sources(game_core PRIVATE
+    src/core/AppOptions.hpp
+    src/core/DebugDraw.hpp
     src/core/Engine.hpp
     src/core/Engine.cpp
     src/core/CombatManager.hpp
