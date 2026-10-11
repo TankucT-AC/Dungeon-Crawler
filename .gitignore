@@ -6,3 +6,4 @@ out
 .zed
 .clangd
 compile_commands.json
+CMakeFiles
