@@ -4,16 +4,21 @@
 #include "src/core/Engine.hpp"
 #include "src/core/config.hpp"
 #include "src/network/AuthClient.hpp"
-#include "src/network/AuthService.hpp"
+#include "src/network/AuthDialog.hpp"
+#include <QApplication>
+#include <QDialog>
 #include <iostream>
 
-int main() {
+int main(int argc, char *argv[]) {
+  (void)argc;
+  (void)argv;
   try {
 #if !DEBUG_NOT_AUTH
-    AuthClient auth;
-    AuthService authService(auth);
+    QApplication app(argc, argv);
+    auth::AuthClient auth;
+    auth::AuthDialog authDialog(auth);
 
-    if (!authService.run()) {
+    if (authDialog.exec() != QDialog::Accepted) {
       std::cout << "[Main] Авторизация не удалась или окно закрыто. Выход.\n";
       return EXIT_SUCCESS;
     }

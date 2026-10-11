@@ -4,8 +4,10 @@ project(2DGame)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_AUTOMOC ON)
 
 find_package(OpenSSL REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Network)
 
 find_package(SFML 2.6 REQUIRED COMPONENTS system window graphics audio network)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/SFML)
@@ -49,11 +51,17 @@ target_sources(game_core PRIVATE
     src/game/WeaponPickup.hpp
 )
 
-# Network
+# Network (Qt6, см. src/network/*.hpp)
 target_sources(game_core PRIVATE
+    src/network/AuthConfig.hpp
+    src/network/AuthResult.hpp
+    src/network/AuthTransport.hpp
+    src/network/AuthTransport.cpp
     src/network/AuthClient.hpp
-    src/network/AuthService.hpp
-    src/network/AuthService.cpp
+    src/network/AuthClient.cpp
+    src/network/AuthDialog.hpp
+    src/network/AuthDialog.cpp
+    src/network/AuthTheme.hpp
 )
 
 # UI
@@ -84,11 +92,6 @@ target_sources(game_core PRIVATE
     src/world/BiomeTheme.hpp
 )
 
-# third-party
-target_sources(game_core PRIVATE
-    third-party/cpp-httplib/httplib.h
-)
-
 target_include_directories(game_core PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/
     ${OPENSSL_INCLUDE_DIR}
@@ -100,6 +103,9 @@ target_link_libraries(game_core PUBLIC
     sfml-system
     sfml-audio
     sfml-network
+    Qt6::Core
+    Qt6::Widgets
+    Qt6::Network
     OpenSSL::SSL
     OpenSSL::Crypto
     pthread
@@ -112,6 +118,11 @@ option(BUILD_TESTS "Build tests" ON)
 if(BUILD_TESTS)
   enable_testing()
   add_subdirectory(tests)
+endif()
+
+option(BUILD_SERVER "Build Drogon auth server (server/)" ON)
+if(BUILD_SERVER)
+  add_subdirectory(server)
 endif()
 
 # copy assets in bin

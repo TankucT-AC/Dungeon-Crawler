@@ -1,14 +1,17 @@
-cmake_minimum_required(VERSION 3.10)
-project(server_test CXX)
+cmake_minimum_required(VERSION 3.20)
 
-add_executable(${PROJECT_NAME} test_main.cc)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  project(server_test CXX)
+  find_package(Drogon CONFIG REQUIRED)
+endif()
 
-# ##############################################################################
-# If you include the drogon source code locally in your project, use this method
-# to add drogon 
-# target_link_libraries(${PROJECT_NAME} PRIVATE drogon)
-#
-# and comment out the following lines
-target_link_libraries(${PROJECT_NAME} PRIVATE Drogon::Drogon)
+add_executable(server_test test_main.cc)
 
-ParseAndAddDrogonTests(${PROJECT_NAME})
+target_link_libraries(server_test PRIVATE Drogon::Drogon)
+
+if(NOT COMMAND ParseAndAddDrogonTests AND DEFINED drogon_SOURCE_DIR)
+  include("${drogon_SOURCE_DIR}/cmake/DrogonUtilities.cmake" OPTIONAL)
+endif()
+if(COMMAND ParseAndAddDrogonTests)
+  ParseAndAddDrogonTests(server_test)
+endif()

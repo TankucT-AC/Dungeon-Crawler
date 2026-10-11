@@ -21,6 +21,8 @@ target_include_directories(test_auth PRIVATE
 )
 target_link_libraries(test_auth PRIVATE
     game_core
+    Qt6::Core
+    Qt6::Network
     gtest
     gtest_main
     gmock

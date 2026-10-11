@@ -1,72 +1,183 @@
+// Copyright (C) 2026 Magomed Gadzhiumarov
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "src/network/AuthClient.hpp"
-#include "third-party/cpp-httplib/httplib.h"
-#include <gmock/gmock.h>
+
 #include <gtest/gtest.h>
 #include <memory>
+#include <string>
 
-using ::testing::_;
-using ::testing::ByMove;
-using ::testing::Return;
+using namespace auth;
 
-class MockClient : public IHttpClient {
+namespace {
+
+class FakeTransport : public IAuthTransport {
 public:
-  MOCK_METHOD(httplib::Result, Post,
-              (const std::string &, const std::string &, const std::string &),
-              (override));
+  explicit FakeTransport(HttpResult preset) : preset_(preset) {}
+
+  HttpResult post(const QString &path, const QByteArray &body) override {
+    lastPath = path;
+    lastBody = body;
+    return preset_;
+  }
+
+  QString lastPath;
+  QByteArray lastBody;
+
+private:
+  HttpResult preset_;
 };
 
-class AuthClientTest : public ::testing::Test {
-protected:
-  void SetUp() override { mock_client_ = std::make_unique<MockClient>(); }
-  std::unique_ptr<MockClient> mock_client_;
-};
-
-// Вспомогательная функция, которая собирает httplib::Result
-static httplib::Result make_response(int status, const std::string &body) {
-  auto resp = std::make_unique<httplib::Response>();
-  resp->status = status;
-  resp->body = body;
-  // Возвращаем Result. Третий аргумент - пустые заголовки
-  return httplib::Result(std::move(resp), httplib::Error::Success, {});
+static HttpResult okJson(const std::string &json) {
+  HttpResult r;
+  r.transportOk = true;
+  r.status = 200;
+  r.body = QByteArray::fromStdString(json);
+  return r;
 }
 
-// Вспомогательная функция для имитации сетевой ошибки (возвращаем nullptr
-// внутри Result)
-static httplib::Result make_network_error() {
-  return httplib::Result(nullptr, httplib::Error::Connection, {});
+static HttpResult httpError(int status) {
+  HttpResult r;
+  r.transportOk = true;
+  r.status = status;
+  return r;
 }
 
-TEST_F(AuthClientTest, LoginSuccess) {
-  std::string json = R"({"status":"success","password":"secret"})";
+static HttpResult networkError(const char *what) {
+  HttpResult r;
+  r.transportOk = false;
+  r.errorString = QString::fromLatin1(what);
+  return r;
+}
 
-  EXPECT_CALL(*mock_client_, Post("/api/login", _, "application/json"))
-      .WillOnce(Return(ByMove(make_response(200, json))));
+static AuthClient makeClient(HttpResult preset, FakeTransport **outFake) {
+  auto fake = std::make_unique<FakeTransport>(preset);
+  *outFake = fake.get();
+  return AuthClient(AuthConfig{}, std::move(fake));
+}
 
-  AuthClient auth(std::move(mock_client_));
-  auto res = auth.login("user", "pass");
+} // namespace
+
+TEST(AuthClientTest, LoginSuccess) {
+  FakeTransport *fake = nullptr;
+  AuthClient auth =
+      makeClient(okJson(R"({"status":"success","password":"secret"})"), &fake);
+
+  const AuthResult res = auth.login("user", "pass");
+
   EXPECT_TRUE(res.success);
-  EXPECT_FALSE(res.requires_2fa);
-  EXPECT_EQ(res.password, "secret");
+  EXPECT_FALSE(res.requires2FA);
+  EXPECT_EQ(res.password.toStdString(), "secret");
+  EXPECT_EQ(fake->lastPath.toStdString(), "/api/login");
 }
 
-// Тест сетевой ошибки
-TEST_F(AuthClientTest, LoginNetworkError) {
-  EXPECT_CALL(*mock_client_, Post(_, _, _))
-      .WillOnce(Return(ByMove(make_network_error()))); // Имитация ошибки сети
+TEST(AuthClientTest, LoginRequires2FA) {
+  FakeTransport *fake = nullptr;
+  AuthClient auth = makeClient(
+      okJson(R"({"status":"success","is_totp_verify":true})"), &fake);
 
-  AuthClient auth(std::move(mock_client_));
-  auto res = auth.login("user", "pass");
+  const AuthResult res = auth.login("user", "pass");
+
+  EXPECT_TRUE(res.success);
+  EXPECT_TRUE(res.requires2FA);
+}
+
+TEST(AuthClientTest, LoginFailure) {
+  FakeTransport *fake = nullptr;
+  AuthClient auth = makeClient(okJson(R"({"status":"fail"})"), &fake);
+
+  const AuthResult res = auth.login("user", "wrong");
+
   EXPECT_FALSE(res.success);
-  EXPECT_THAT(res.message, ::testing::StartsWith("NET_ERR:"));
+  EXPECT_FALSE(res.requires2FA);
 }
 
-// Тест регистрации
-TEST_F(AuthClientTest, RegisterSuccess) {
-  std::string json = R"({"status":"success"})";
-  EXPECT_CALL(*mock_client_, Post("/api/register", _, _))
-      .WillOnce(Return(ByMove(make_response(200, json))));
+TEST(AuthClientTest, LoginNetworkError) {
+  FakeTransport *fake = nullptr;
+  AuthClient auth = makeClient(networkError("Connection refused"), &fake);
 
-  AuthClient auth(std::move(mock_client_));
-  auto res = auth.registerUser("newuser");
+  const AuthResult res = auth.login("user", "pass");
+
+  EXPECT_FALSE(res.success);
+  EXPECT_TRUE(res.message.startsWith("NET_ERR:"));
+}
+
+TEST(AuthClientTest, LoginServerError) {
+  FakeTransport *fake = nullptr;
+  AuthClient auth = makeClient(httpError(500), &fake);
+
+  const AuthResult res = auth.login("user", "pass");
+
+  EXPECT_FALSE(res.success);
+  EXPECT_EQ(res.message.toStdString(), "SERVER_ERROR_500");
+}
+
+TEST(AuthClientTest, LoginJsonError) {
+  FakeTransport *fake = nullptr;
+  AuthClient auth = makeClient(okJson("this is not json"), &fake);
+
+  const AuthResult res = auth.login("user", "pass");
+
+  EXPECT_FALSE(res.success);
+  EXPECT_EQ(res.message.toStdString(), "JSON_ERROR");
+}
+
+TEST(AuthClientTest, RegisterSuccess) {
+  FakeTransport *fake = nullptr;
+  AuthClient auth = makeClient(okJson(R"({"status":"success"})"), &fake);
+
+  const AuthResult res = auth.registerUser("newuser");
+
   EXPECT_TRUE(res.success);
+  EXPECT_EQ(fake->lastPath.toStdString(), "/api/register");
+}
+
+TEST(AuthClientTest, Setup2FADecodesQr) {
+  FakeTransport *fake = nullptr;
+  // "aGVsbG8=" — base64 от "hello"
+  AuthClient auth =
+      makeClient(okJson(R"({"status":"success","qr_code_base64":"aGVsbG8=",
+                  "totp_secret":"SECRET123"})"),
+                 &fake);
+
+  const AuthResult res = auth.setup2FA("user");
+
+  EXPECT_TRUE(res.success);
+  EXPECT_EQ(fake->lastPath.toStdString(), "/api/setup_2fa");
+  EXPECT_EQ(res.qrPng.toStdString(), "hello");
+  EXPECT_EQ(res.totpSecret.toStdString(), "SECRET123");
+}
+
+TEST(AuthClientTest, Verify2FASuccess) {
+  FakeTransport *fake = nullptr;
+  AuthClient auth = makeClient(okJson(R"({"status":"success"})"), &fake);
+
+  const AuthResult res = auth.verify2FA("user", "123456");
+
+  EXPECT_TRUE(res.success);
+  EXPECT_EQ(fake->lastPath.toStdString(), "/api/verify_2fa");
+  EXPECT_TRUE(fake->lastBody.contains("totp_key"));
+}
+
+TEST(AuthClientTest, Verify2FAFailure) {
+  FakeTransport *fake = nullptr;
+  AuthClient auth = makeClient(okJson(R"({"status":"fail"})"), &fake);
+
+  const AuthResult res = auth.verify2FA("user", "000000");
+
+  EXPECT_FALSE(res.success);
+}
+
+TEST(AuthClientTest, CustomConfigPathsAreUsed) {
+  AuthConfig cfg;
+  cfg.loginPath = "/custom/login";
+  auto fake =
+      std::make_unique<FakeTransport>(okJson(R"({"status":"success"})"));
+  FakeTransport *raw = fake.get();
+  AuthClient auth(cfg, std::move(fake));
+
+  const AuthResult res = auth.login("user", "pass");
+
+  EXPECT_TRUE(res.success);
+  EXPECT_EQ(raw->lastPath.toStdString(), "/custom/login");
 }
