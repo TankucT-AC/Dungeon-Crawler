@@ -3,5 +3,6 @@
 build
 out
 .vscode
+.zed
 .clangd
 compile_commands.json
